@@ -36,7 +36,6 @@ class AnagramFinder
      */
     public function groupAnagrams(array $words): array
     {
-        // Just return empty array if nothging given
         if (empty($words)) {
             return [];
         }
@@ -45,13 +44,12 @@ class AnagramFinder
         $this->validateWords($words);
 
         $groupedAnagrams = [];
-
         foreach ($words as $subject) {
-            foreach ($words as $match) {
-                if ($this->isWordAnAnagramOfSubject($match, $subject)
-                    && !$this->groupExists($subject, $match, $groupedAnagrams)    
+            foreach ($words as $word) {
+                if ($this->isWordAnAnagramOfSubject($word, $subject)
+                    && !$this->groupExists($subject, $word, $groupedAnagrams)    
                 ) {
-                    $groupedAnagrams[] = [$subject, $match];
+                    $groupedAnagrams[] = [$subject, $word];
                 }
             }
         }
@@ -94,7 +92,6 @@ class AnagramFinder
                 return $value === $char;
             });
 
-            // If we found the character remove it from the match
             if ($keyInArray !== null) {
                 unset ($splitMatch[$keyInArray]);
             }
