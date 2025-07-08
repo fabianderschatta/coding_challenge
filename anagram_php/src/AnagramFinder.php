@@ -44,16 +44,19 @@ class AnagramFinder
         $this->validateWords($words);
 
         $groupedAnagrams = [];
-        foreach ($words as $subject) {
+        while (!empty($words)) {
+            // Get and remove the first word from the array
+            $subject = array_shift($words);
+
             // Ignore empty strings
-            if (empty(trim($subject))) {
-                continue;
-            }
+            if (empty(trim($subject))) continue;
+
             foreach ($words as $word) {
-                if ($this->isWordAnAnagramOfSubject($word, $subject)
-                    && !$this->groupExists($subject, $word, $groupedAnagrams)    
+                $group = $this->createGroup($subject, $word);
+                if (!$this->groupExists($group, $groupedAnagrams) 
+                    && $this->isWordAnAnagramOfSubject($word, $subject)
                 ) {
-                    $groupedAnagrams[] = [$subject, $word];
+                    $groupedAnagrams[] = $group;
                 }
             }
         }
@@ -66,7 +69,8 @@ class AnagramFinder
      * 
      * We only accept string with alphanumeric characters.
      */
-    private function validateWords(array $words): void {
+    private function validateWords(array $words): void 
+    {
         array_walk($words, function($word) {
             if (!is_string($word)) {
                 throw new IllegalCharacterException("Word $word is not a string.");
@@ -75,6 +79,16 @@ class AnagramFinder
                 throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
             }
         });
+    }
+
+    /**
+     * Creates a sorted array containing subject and word
+     */
+    private function createGroup(string $subject, string $word): array 
+    {
+        $group = [$subject, $word];
+        sort($group);
+        return $group;
     }
 
     /**
@@ -108,11 +122,9 @@ class AnagramFinder
     /**
      * Check if the given combination already exists in the given groups array.
      */
-    private function groupExists(string $subject, string $match, array $groups): bool {
-        $group = [$subject, $match];
-        $reverseGroup = array_reverse($group);
-
-        return in_array($group, $groups) || in_array($reverseGroup, $groups);
+    private function groupExists(array $group, array $groups): bool 
+    {
+        return in_array($group, $groups);
     }
 
 }
