@@ -1,11 +1,14 @@
 package de.derschatta;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -13,35 +16,71 @@ import org.junit.Test;
  */
 public class AnagramFinderTest {
 
-    @Test(expected=InputMismatchException.class)
-    public void throwsExceptionWhenEmptyListGiven() {
-        List<String> words = new ArrayList<>();
-
-        AnagramFinder anagramFinder = new AnagramFinder();
-        anagramFinder.groupAnagrams(words);
+    private AnagramFinder anagramFinder;
+     
+    @Before
+    public void setUp() {
+        anagramFinder = new AnagramFinder();
     }
 
     @Test
-    public void findsAnagramsInList() {
-        List<String> words = new ArrayList<>(
-            Arrays.asList(
-            "listen", 
-                "silent",
-                "google", 
-                "silent", 
-                "tinsel"
-            )
-        );
-
-        AnagramFinder anagramFinder = new AnagramFinder();
-        List<List<String>> result = anagramFinder.groupAnagrams(words);
-
+    public void groupAnagramsInArray() {
         List<List<String>> expected = Arrays.asList(
             Arrays.asList("listen", "silent"),
             Arrays.asList("listen", "tinsel"),
             Arrays.asList("silent", "tinsel")
         );
 
+        List<String> input = Arrays.asList(
+        "listen", 
+            "silent",
+            "google",
+            "",
+            "silent", 
+            " ",
+            "tinsel"
+        );
+
+        List<List<String>> result = anagramFinder.groupAnagrams(input);
+
         assertThat(result).hasSameElementsAs(expected);
     }
+
+    @Test
+    public void sameWordsAreIgnoredAndNoEmptyInnerListsCreated() {
+        List<String> input = Arrays.asList(
+        "listen", 
+            "listen"
+        );
+
+        assertNull(anagramFinder.groupAnagrams(input));
+    }
+
+    @Test
+    public void emptyListPassedReturnsEmptyArray() {
+        List<String> input = new ArrayList<>();
+
+        assertNull(anagramFinder.groupAnagrams(input));
+    }
+
+    @Test
+    public void nonAnagramMatchesAreNotReturned() {
+        List<String> input = Arrays.asList(
+        "google", 
+            "microsoft"
+        );
+
+        assertNull(anagramFinder.groupAnagrams(input));
+    }
+
+    @Test(expected=InputMismatchException.class)
+    public void invalidCharactersInWordsThrowException() {
+        List<String> input = Arrays.asList(
+        "g@@gle", 
+            "google"
+        );
+
+        anagramFinder.groupAnagrams(input);
+    }
+
 }

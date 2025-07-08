@@ -1,8 +1,11 @@
 package de.derschatta;
 
 import java.util.ArrayList;
-import java.util.InputMismatchException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.InputMismatchException;
+
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A class to find anagrams.
@@ -32,14 +35,83 @@ public class AnagramFinder {
      * Takes an array of words and returns an array of arrays, where each inner array
      * contains words that are anagrams of each other. 
      */
-    public List<List<String>> groupAnagrams(List<String> words) {
+    public @Nullable List<List<String>> groupAnagrams(List<String> words) {
         if (words.isEmpty()) {
-            throw new InputMismatchException("No words provided.");
+            return null;
         }
         
-        ArrayList<List<String>> wordArrayList = new ArrayList<>();
-        wordArrayList.add(words);
+        validateWords(words);
 
-        return wordArrayList;
+        List<List<String>> groupedAnagrams = new ArrayList<>();
+
+        for (String subject : words) {
+            // Skip empty strings
+            if (subject.trim().isEmpty()) continue;
+            
+            for (String word : words) {
+                if (isWordAnAnagramOfSubject(word, subject)
+                    && !groupExists(subject, word, groupedAnagrams)    
+                ) {
+                    groupedAnagrams.add(new ArrayList<>(Arrays.asList(subject, word)));
+                }
+            }
+        }
+
+        if (groupedAnagrams.isEmpty()) {
+            return null;
+        }
+
+        return groupedAnagrams;
+    }
+
+    /**
+     * Make sure we have only valid words in the array we can form anagrams for.
+     * 
+     * We only accept string with alphanumeric characters.
+     */
+    private void validateWords(List<String> words) {
+        for (String word : words) {
+            // We just ignore empty strings
+            if (word.trim().isEmpty()) continue;
+
+            if (!word.matches("^[a-zA-Z0-9]*$")) {
+                throw new InputMismatchException("Word " + word + " contains illegal character. Only alphanumeric characters allowed.");
+            }
+        }
+    }
+
+    /**
+     * Check if the given word is an anagram of the subject.
+     */
+    private boolean isWordAnAnagramOfSubject(String word, String subject) {
+        // Same words are not anagrams
+        if (word.equals(subject) || word.trim().isEmpty()) {
+            return false;
+        }
+
+        // Split the word and for each character found in the subject
+        // remove it from the list
+        String[] splitSubject = subject.split("");
+        ArrayList<String> splitMatch = new ArrayList<>(Arrays.asList(word.split("")));
+
+        for (String character : splitSubject) {
+            int indexOfList = splitMatch.indexOf(character); 
+            if (indexOfList > -1) {
+                splitMatch.remove(indexOfList);
+            }
+        }
+
+        // Empty means all characters of the subject are present
+        return splitMatch.isEmpty();
+    }
+
+    /**
+     * Check if the given combination already exists in the given groups array.
+     */
+    private boolean groupExists(String subject, String match, List<List<String>> groups) {
+        ArrayList<String> newGroup = new ArrayList<>(Arrays.asList(subject, match));
+        ArrayList<String> reverseGroup = new ArrayList<>(newGroup.reversed());
+
+        return groups.contains(newGroup) || groups.contains(reverseGroup);
     }
 }
