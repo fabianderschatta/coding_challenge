@@ -42,17 +42,24 @@ public class AnagramFinder {
         
         validateWords(words);
 
+        ArrayList<String> mmutableWordList = new ArrayList<>(words);
         List<List<String>> groupedAnagrams = new ArrayList<>();
 
-        for (String subject : words) {
+        while(mmutableWordList.size() > 0) {
+            // Get and remove the first word from the list
+            // to not have to go through the whole list on every iteration again
+            String subject = mmutableWordList.get(0);
+            mmutableWordList.remove(0);
+
             // Skip empty strings
             if (subject.trim().isEmpty()) continue;
             
-            for (String word : words) {
-                if (isWordAnAnagramOfSubject(word, subject)
-                    && !groupExists(subject, word, groupedAnagrams)    
+            for (String word : mmutableWordList) {
+                List<String> group = createGroup(subject, word);
+                if (!groupExists(group, groupedAnagrams)    
+                    && isWordAnAnagramOfSubject(word, subject)
                 ) {
-                    groupedAnagrams.add(new ArrayList<>(Arrays.asList(subject, word)));
+                    groupedAnagrams.add(group);
                 }
             }
         }
@@ -62,6 +69,18 @@ public class AnagramFinder {
         }
 
         return groupedAnagrams;
+    }
+
+    /**
+     * Create a sorted list containing both subject and word
+     */
+    private List<String> createGroup(String subject, String word) {
+        ArrayList<String> group = new ArrayList<>();
+        group.add(subject);
+        group.add(word);
+        group.sort(null);
+
+        return group;
     }
 
     /**
@@ -108,10 +127,7 @@ public class AnagramFinder {
     /**
      * Check if the given combination already exists in the given groups array.
      */
-    private boolean groupExists(String subject, String match, List<List<String>> groups) {
-        ArrayList<String> newGroup = new ArrayList<>(Arrays.asList(subject, match));
-        ArrayList<String> reverseGroup = new ArrayList<>(newGroup.reversed());
-
-        return groups.contains(newGroup) || groups.contains(reverseGroup);
+    private boolean groupExists(List<String> group, List<List<String>> groups) {
+        return groups.contains(group);
     }
 }
