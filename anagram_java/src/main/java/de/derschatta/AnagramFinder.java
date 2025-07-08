@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public class AnagramFinder {
 
     /**
-     * Takes an array of words and returns an array of arrays, where each inner array
+     * Takes a list of words and returns a list of lists, where each inner list
      * contains words that are anagrams of each other. 
      */
     public @Nullable List<List<String>> groupAnagrams(List<String> words) {
