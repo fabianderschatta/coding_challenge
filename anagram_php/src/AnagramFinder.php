@@ -24,13 +24,15 @@ namespace App;
  *   • Provided words without at least one anagram should get dropped.
  *   • No empty inner lists
  */
-class AnagramFinder {
+class AnagramFinder
+{
 
     /**
      * Takes an array of words and returns an array of arrays, where each inner array
      * contains words that are anagrams of each other. 
      */
-    public function groupAnagrams(array $words): array {
+    public function groupAnagrams(array $words): array
+    {
         return $words;
     }
 
