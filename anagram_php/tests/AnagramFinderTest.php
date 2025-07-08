@@ -24,7 +24,15 @@ class AnagramFinderTest extends TestCase
             ["listen", "tinsel"],
             ["silent", "tinsel"]
         ];
-        $input = ["listen", "silent", "google", "silent", "tinsel"];
+        $input = [
+            "listen", 
+            "silent", 
+            "",
+            "google", 
+            "silent", 
+            " ",
+            "tinsel"
+        ];
 
         $output = $this->anagramFinder->groupAnagrams($input);
 
@@ -54,7 +62,7 @@ class AnagramFinderTest extends TestCase
     public function testNoAnagramMatchesAreNotReturned() 
     {
         $expected = [];
-        $input = ["google", "google"];
+        $input = ["google", "microsoft"];
 
         $output = $this->anagramFinder->groupAnagrams($input);
 

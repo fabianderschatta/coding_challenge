@@ -45,6 +45,10 @@ class AnagramFinder
 
         $groupedAnagrams = [];
         foreach ($words as $subject) {
+            // Ignore empty strings
+            if (empty(trim($subject))) {
+                continue;
+            }
             foreach ($words as $word) {
                 if ($this->isWordAnAnagramOfSubject($word, $subject)
                     && !$this->groupExists($subject, $word, $groupedAnagrams)    
@@ -67,7 +71,7 @@ class AnagramFinder
             if (!is_string($word)) {
                 throw new IllegalCharacterException("Word $word is not a string.");
             }
-            if (preg_match('/[^a-z0-9]/i', $word)) {
+            if (!preg_match('/^[a-zA-Z0-9]*$/', trim($word))) {
                 throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
             }
         });
@@ -78,8 +82,8 @@ class AnagramFinder
      */
     private function isWordAnAnagramOfSubject(string $word, string $subject): bool
     {
-        // Same words are not anagrams
-        if ($word === $subject) {
+        // Same words are not anagrams and ignore empty strings
+        if ($word === $subject || empty(trim($word))) {
             return false;
         }
 
