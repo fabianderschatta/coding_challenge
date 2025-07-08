@@ -2,8 +2,9 @@ package de.derschatta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Comparator;
 import java.util.InputMismatchException;
+import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -42,19 +43,19 @@ public class AnagramFinder {
         
         validateWords(words);
 
-        ArrayList<String> mmutableWordList = new ArrayList<>(words);
+        ArrayList<String> mutableWordList = new ArrayList<>(words);
         List<List<String>> groupedAnagrams = new ArrayList<>();
 
-        while(mmutableWordList.size() > 0) {
+        while(!mutableWordList.isEmpty()) {
             // Get and remove the first word from the list
             // to not have to go through the whole list on every iteration again
-            String subject = mmutableWordList.get(0);
-            mmutableWordList.remove(0);
+            String subject = mutableWordList.get(0);
+            mutableWordList.remove(0);
 
             // Skip empty strings
             if (subject.trim().isEmpty()) continue;
             
-            for (String word : mmutableWordList) {
+            for (String word : mutableWordList) {
                 List<String> group = createGroup(subject, word);
                 if (isWordAnAnagramOfSubject(word, subject)
                     && !groupExists(group, groupedAnagrams)
@@ -69,18 +70,6 @@ public class AnagramFinder {
         }
 
         return groupedAnagrams;
-    }
-
-    /**
-     * Create a sorted list containing both subject and word
-     */
-    private List<String> createGroup(String subject, String word) {
-        ArrayList<String> group = new ArrayList<>();
-        group.add(subject);
-        group.add(word);
-        group.sort(null);
-
-        return group;
     }
 
     /**
@@ -100,28 +89,42 @@ public class AnagramFinder {
     }
 
     /**
+     * Create a sorted list containing both subject and word
+     */
+    private List<String> createGroup(String subject, String word) {
+        ArrayList<String> group = new ArrayList<>();
+        group.add(subject);
+        group.add(word);
+        group.sort(null);
+
+        return group;
+    }
+
+    /**
      * Check if the given word is an anagram of the subject.
      */
     private boolean isWordAnAnagramOfSubject(String word, String subject) {
-        // Same words are not anagrams
-        if (word.equals(subject) || word.trim().isEmpty()) {
+        // Exit as early as possible to save time
+        if (word.equals(subject) 
+            || word.trim().isEmpty()
+            || word.length() != subject.length()
+        ) {
             return false;
         }
 
-        // Split the word and for each character found in the subject
-        // remove it from the list
+        // Let's split the words into its characters
+        // and determine whether they include the same letters
         String[] splitSubject = subject.split("");
-        ArrayList<String> splitMatch = new ArrayList<>(Arrays.asList(word.split("")));
+        String[] splitMatch = word.split("");
 
-        for (String character : splitSubject) {
-            int indexOfList = splitMatch.indexOf(character); 
-            if (indexOfList > -1) {
-                splitMatch.remove(indexOfList);
-            }
-        }
+        Comparator<String> comparator = (string1, string2) -> {
+            return string1.compareTo(string2);
+        };
 
-        // Empty means all characters of the subject are present
-        return splitMatch.isEmpty();
+        Arrays.sort(splitSubject, comparator);
+        Arrays.sort(splitMatch, comparator);
+
+        return Arrays.equals(splitSubject, splitMatch);
     }
 
     /**
