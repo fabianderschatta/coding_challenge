@@ -124,7 +124,7 @@ public class AnagramFinder {
         Arrays.sort(splitSubject, comparator);
         Arrays.sort(splitMatch, comparator);
 
-        return Arrays.equals(splitSubject, splitMatch);
+        return Arrays.compare(splitSubject, splitMatch) == 0;
     }
 
     /**
