@@ -40,12 +40,12 @@ class AnagramFinder
             return [];
         }
 
-        // Validate all words
         $this->validateWords($words);
 
         $groupedAnagrams = [];
         while (!empty($words)) {
             // Get and remove the first word from the array
+            // to not have to go through all words again from the start
             $subject = array_shift($words);
 
             // Ignore empty strings
@@ -96,27 +96,18 @@ class AnagramFinder
      */
     private function isWordAnAnagramOfSubject(string $word, string $subject): bool
     {
-        // Same words are not anagrams and ignore empty strings
-        if ($word === $subject || empty(trim($word))) {
+        // Make sure we exit early to save time
+        if ($word === $subject 
+            || empty(trim($word)) 
+            || strlen($word) != strlen($subject)
+        ) {
             return false;
         }
 
-        // Split the word and for each character found in the subject
-        // remove it from the list
         $splitSubject = str_split($subject);
         $splitMatch = str_split($word);
-        foreach ($splitSubject as $char) {
-            $keyInArray = array_find_key($splitMatch, function(string $value) use ($char) {
-                return $value === $char;
-            });
 
-            if ($keyInArray !== null) {
-                unset ($splitMatch[$keyInArray]);
-            }
-        }
-
-        // Empty means all characters of the subject are present
-        return empty($splitMatch);
+        return empty(array_diff($splitMatch, $splitSubject));
     }
 
     /**
