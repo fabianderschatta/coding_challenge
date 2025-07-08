@@ -47,38 +47,11 @@ class AnagramFinder
         $groupedAnagrams = [];
 
         foreach ($words as $subject) {
-            $splittedSubject = str_split($subject);
-
             foreach ($words as $match) {
-                // Ignore the same word
-                if ($match == $subject) {
-                    continue;
-                }
-
-                // Split the word and for each character found in the subject
-                // remove it from the list
-                $splittedMatch = str_split($match);
-                foreach ($splittedSubject as $char) {
-                    $keyInArray = array_find_key($splittedMatch, function(string $value) use ($char) {
-                        return $value === $char;
-                    });
-
-                    // If we found the character remove it from the match
-                    if ($keyInArray !== null) {
-                        unset ($splittedMatch[$keyInArray]);
-                    }
-                }
-
-                // Empty means all characters of the subject are present
-                if (empty($splittedMatch)) {
-                    $group = [$subject, $match];
-                    $reverseGroup = [$match, $subject];
-
-                    if (!in_array($group, $groupedAnagrams) 
-                        && !in_array($reverseGroup, $groupedAnagrams)
-                    ) {
-                        $groupedAnagrams[] = [$subject, $match];
-                    }
+                if ($this->isWordAnAnagramOfSubject($match, $subject)
+                    && !$this->groupExists($subject, $match, $groupedAnagrams)    
+                ) {
+                    $groupedAnagrams[] = [$subject, $match];
                 }
             }
         }
@@ -86,6 +59,11 @@ class AnagramFinder
         return $groupedAnagrams;
     }
 
+    /**
+     * Make sure we have only valid words in the array we can form anagrams for.
+     * 
+     * We only accept string with alphanumeric characters.
+     */
     private function validateWords(array $words): void {
         array_walk($words, function($word) {
             if (!is_string($word)) {
@@ -95,6 +73,45 @@ class AnagramFinder
                 throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
             }
         });
+    }
+
+    /**
+     * Check if the given word is an anagram of the subject.
+     */
+    private function isWordAnAnagramOfSubject(string $word, string $subject): bool
+    {
+        // Same words are not anagrams
+        if ($word === $subject) {
+            return false;
+        }
+
+        // Split the word and for each character found in the subject
+        // remove it from the list
+        $splitSubject = str_split($subject);
+        $splitMatch = str_split($word);
+        foreach ($splitSubject as $char) {
+            $keyInArray = array_find_key($splitMatch, function(string $value) use ($char) {
+                return $value === $char;
+            });
+
+            // If we found the character remove it from the match
+            if ($keyInArray !== null) {
+                unset ($splitMatch[$keyInArray]);
+            }
+        }
+
+        // Empty means all characters of the subject are present
+        return empty($splitMatch);
+    }
+
+    /**
+     * Check if the given combination already exists in the given groups array.
+     */
+    private function groupExists(string $subject, string $match, array $groups): bool {
+        $group = [$subject, $match];
+        $reverseGroup = array_reverse($group);
+
+        return in_array($group, $groups) || in_array($reverseGroup, $groups);
     }
 
 }
