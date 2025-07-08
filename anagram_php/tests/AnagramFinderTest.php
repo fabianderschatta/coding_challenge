@@ -5,6 +5,7 @@ namespace App\Tests;
 
 use App\AnagramFinder;
 use App\Exception\IllegalCharacterException;
+use App\Tests\Util\RandomAnagramListGenerator;
 use PHPUnit\Framework\TestCase;
 
 class AnagramFinderTest extends TestCase 
@@ -83,6 +84,19 @@ class AnagramFinderTest extends TestCase
 
         $this->expectException(IllegalCharacterException::class);
         $this->anagramFinder->groupAnagrams($input);
+    }
+
+    /**
+     * This test can be used for testing performance of larger word lists
+     */
+    public function testGroupLargeListOfAnagrams() 
+    {
+        $this->markTestSkipped('Enable this test case if you want to test with large word lists.');
+        
+        $input = (new RandomAnagramListGenerator())->generateWordList(1000);
+
+        $output = $this->anagramFinder->groupAnagrams($input);
+        $this->assertIsArray($output);
     }
 
 }
