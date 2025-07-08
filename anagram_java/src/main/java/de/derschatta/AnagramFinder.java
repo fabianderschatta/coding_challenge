@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
  * 
  * This is part of the following coding challenge:
  * 
- * Write a class AnagramFinder with a function groupAnagrams that takes an array of words and returns an array
- * of arrays, where each inner array contains words that are anagrams of each other. Each group of anagrams
- * should be listed together in the inner array.
+ * Write a class AnagramFinder with a function groupAnagrams that takes a lisst of words and returns a list
+ * of lists, where each inner list contains words that are anagrams of each other. Each group of anagrams
+ * should be listed together in the inner list.
  * 
  * An anagram of a word is a word formed by rearranging the letters of the original, using all the original
  * letters exactly once. For example:
