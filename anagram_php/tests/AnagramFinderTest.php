@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 
-namespace App;
+namespace App\Tests;
 
+use App\AnagramFinder;
+use App\Exception\IllegalCharacterException;
 use PHPUnit\Framework\TestCase;
 
 class AnagramFinderTest extends TestCase 
@@ -22,6 +25,16 @@ class AnagramFinderTest extends TestCase
             ["silent", "tinsel"]
         ];
         $input = ["listen", "silent", "google", "silent", "tinsel"];
+
+        $output = $this->anagramFinder->groupAnagrams($input);
+
+        $this->assertEqualsCanonicalizing($expected, $output);
+    }
+
+    public function testSameWordsAreIgnored() 
+    {
+        $expected = [];
+        $input = ["listen", "listen"];
 
         $output = $this->anagramFinder->groupAnagrams($input);
 

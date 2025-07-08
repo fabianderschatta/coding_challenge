@@ -1,6 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App;
+
+use App\Exception\IllegalCharacterException;
 
 /**
  * A class to find anagrams.
@@ -33,7 +36,65 @@ class AnagramFinder
      */
     public function groupAnagrams(array $words): array
     {
-        return $words;
+        // Just return empty array if nothging given
+        if (empty($words)) {
+            return [];
+        }
+
+        // Validate all words
+        $this->validateWords($words);
+
+        $groupedAnagrams = [];
+
+        foreach ($words as $subject) {
+            $splittedSubject = str_split($subject);
+
+            foreach ($words as $match) {
+                // Ignore the same word
+                if ($match == $subject) {
+                    continue;
+                }
+
+                // Split the word and for each character found in the subject
+                // remove it from the list
+                $splittedMatch = str_split($match);
+                foreach ($splittedSubject as $char) {
+                    $keyInArray = array_find_key($splittedMatch, function(string $value) use ($char) {
+                        return $value === $char;
+                    });
+
+                    // If we found the character remove it from the match
+                    if ($keyInArray !== null) {
+                        unset ($splittedMatch[$keyInArray]);
+                    }
+                }
+
+                // Empty means all characters of the subject are present
+                if (empty($splittedMatch)) {
+                    $group = [$subject, $match];
+                    $reverseGroup = [$match, $subject];
+
+                    if (!in_array($group, $groupedAnagrams) 
+                        && !in_array($reverseGroup, $groupedAnagrams)
+                    ) {
+                        $groupedAnagrams[] = [$subject, $match];
+                    }
+                }
+            }
+        }
+        
+        return $groupedAnagrams;
+    }
+
+    private function validateWords(array $words): void {
+        array_walk($words, function($word) {
+            if (!is_string($word)) {
+                throw new IllegalCharacterException("Word $word is not a string.");
+            }
+            if (preg_match('/[^a-z0-9]/i', $word)) {
+                throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
+            }
+        });
     }
 
 }
