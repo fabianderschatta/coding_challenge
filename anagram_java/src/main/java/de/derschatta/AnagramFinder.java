@@ -56,8 +56,8 @@ public class AnagramFinder {
             
             for (String word : mmutableWordList) {
                 List<String> group = createGroup(subject, word);
-                if (!groupExists(group, groupedAnagrams)    
-                    && isWordAnAnagramOfSubject(word, subject)
+                if (isWordAnAnagramOfSubject(word, subject)
+                    && !groupExists(group, groupedAnagrams)
                 ) {
                     groupedAnagrams.add(group);
                 }

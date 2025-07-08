@@ -53,8 +53,8 @@ class AnagramFinder
 
             foreach ($words as $word) {
                 $group = $this->createGroup($subject, $word);
-                if (!$this->groupExists($group, $groupedAnagrams) 
-                    && $this->isWordAnAnagramOfSubject($word, $subject)
+                if ($this->isWordAnAnagramOfSubject($word, $subject)
+                    && !$this->groupExists($group, $groupedAnagrams)
                 ) {
                     $groupedAnagrams[] = $group;
                 }
