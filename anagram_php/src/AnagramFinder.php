@@ -51,7 +51,7 @@ class AnagramFinder
             // Ignore empty strings
             if (empty(trim($subject))) continue;
 
-            $groupKey = $this->createGroupAndReturnKey($subject);
+            $groupKey = $this->createSortedSubject($subject);
             $groupedAnagrams[$groupKey][] = $subject;
 
             foreach ($words as $index => $word) {
@@ -81,19 +81,6 @@ class AnagramFinder
                 throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
             }
         });
-    }
-
-    /**
-     * Creates a new group if necessary and returns the key.
-     */
-    private function createGroupAndReturnKey(string $subject): string
-    {
-        $groupKey = $this->createSortedSubject($subject);
-        if (!isset($groupedAnagrams[$groupKey])) {
-            $groupedAnagrams[$groupKey] = [];
-        } 
-
-        return $groupKey;
     }
 
     /**
