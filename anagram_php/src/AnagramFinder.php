@@ -51,17 +51,19 @@ class AnagramFinder
             // Ignore empty strings
             if (empty(trim($subject))) continue;
 
-            foreach ($words as $word) {
-                $group = $this->createGroup($subject, $word);
-                if ($this->isWordAnAnagramOfSubject($word, $subject)
-                    && !$this->groupExists($group, $groupedAnagrams)
-                ) {
-                    $groupedAnagrams[] = $group;
+            $groupKey = $this->createGroupAndReturnKey($subject);
+            $groupedAnagrams[$groupKey][] = $subject;
+
+            foreach ($words as $index => $word) {
+                if ($this->isWordAnAnagramOfSubject($word, $subject)) {
+                    $groupedAnagrams[$groupKey][] = $word;
+                    // It's already part of a group so remove it to save time later
+                    unset($words[$index]);
                 }
             }
         }
-        
-        return $groupedAnagrams;
+
+        return $this->cleanUpGroups($groupedAnagrams);
     }
 
     /**
@@ -82,13 +84,26 @@ class AnagramFinder
     }
 
     /**
-     * Creates a sorted array containing subject and word
+     * Creates a new group if necessary and returns the key.
      */
-    private function createGroup(string $subject, string $word): array 
+    private function createGroupAndReturnKey(string $subject): string
     {
-        $group = [$subject, $word];
-        sort($group);
-        return $group;
+        $groupKey = $this->createSortedSubject($subject);
+        if (!isset($groupedAnagrams[$groupKey])) {
+            $groupedAnagrams[$groupKey] = [];
+        } 
+
+        return $groupKey;
+    }
+
+    /**
+     * Sort the subject alphabetically
+     */
+    private function createSortedSubject(string $subject): string
+    {
+        $splitSubject = str_split($subject);
+        sort($splitSubject);
+        return implode("", $splitSubject);
     }
 
     /**
@@ -105,17 +120,27 @@ class AnagramFinder
         }
 
         $splitSubject = str_split($subject);
+        sort($splitSubject);
         $splitMatch = str_split($word);
+        sort($splitMatch);
 
-        return empty(array_diff($splitMatch, $splitSubject));
+        return $splitMatch == $splitSubject;
     }
 
     /**
-     * Check if the given combination already exists in the given groups array.
+     * Clean up groups, making sure in each group each word only exists once
      */
-    private function groupExists(array $group, array $groups): bool 
+    private function cleanUpGroups(array $groupedAnagrams): array
     {
-        return in_array($group, $groups);
+        $cleanedGroupedAnagrams = [];
+        foreach ($groupedAnagrams as $group) {
+            $group = array_unique($group);
+            if (count($group) > 1) {
+                $cleanedGroupedAnagrams[] = $group;
+            }           
+        }
+        
+        return $cleanedGroupedAnagrams;
     }
 
 }

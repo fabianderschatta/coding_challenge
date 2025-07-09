@@ -21,18 +21,20 @@ class AnagramFinderTest extends TestCase
     public function testGroupAnagramsInArray() 
     {
         $expected = [
-            ["listen", "silent"],
-            ["listen", "tinsel"],
-            ["silent", "tinsel"]
+            ["listen", "silent", "tinsel"],
+            ["vile", "evil"],
         ];
         $input = [
             "listen", 
             "silent", 
             "",
             "google", 
-            "silent", 
+            "evil",
+            "silent",
+            "vile", 
             " ",
-            "tinsel"
+            "tinsel",
+            "evil",
         ];
 
         $output = $this->anagramFinder->groupAnagrams($input);
@@ -96,6 +98,7 @@ class AnagramFinderTest extends TestCase
         $input = (new RandomAnagramListGenerator())->generateWordList(1000);
 
         $output = $this->anagramFinder->groupAnagrams($input);
+
         $this->assertIsArray($output);
     }
 
