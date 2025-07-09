@@ -3,6 +3,7 @@ package de.derschatta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.List;
 
@@ -54,22 +55,27 @@ public class AnagramFinder {
 
             // Skip empty strings
             if (subject.trim().isEmpty()) continue;
+
+            List<String> currentList = new ArrayList<>();
+            currentList.add(subject);
             
-            for (String word : mutableWordList) {
-                List<String> group = createGroup(subject, word);
-                if (isWordAnAnagramOfSubject(word, subject)
-                    && !groupExists(group, groupedAnagrams)
-                ) {
-                    groupedAnagrams.add(group);
+            for (int i = 0; i < mutableWordList.size(); i++) {
+                String word = mutableWordList.get(i);
+                if (isWordAnAnagramOfSubject(word, subject)) {
+                    currentList.add(word);
+                    // It's already part of a group so remove it to save time later
+                    mutableWordList.remove(i);
                 }
+            }
+
+            if (!currentList.isEmpty()) {
+                groupedAnagrams.add(currentList);
             }
         }
 
-        if (groupedAnagrams.isEmpty()) {
-            return null;
-        }
+        List<List<String>> finalGroupedList = cleanUpGroups(groupedAnagrams);
 
-        return groupedAnagrams;
+        return !finalGroupedList.isEmpty() ? finalGroupedList : null;
     }
 
     /**
@@ -86,18 +92,6 @@ public class AnagramFinder {
                 throw new InputMismatchException("Word " + word + " contains illegal character. Only alphanumeric characters allowed.");
             }
         }
-    }
-
-    /**
-     * Create a sorted list containing both subject and word
-     */
-    private List<String> createGroup(String subject, String word) {
-        ArrayList<String> group = new ArrayList<>();
-        group.add(subject);
-        group.add(word);
-        group.sort(null);
-
-        return group;
     }
 
     /**
@@ -128,9 +122,19 @@ public class AnagramFinder {
     }
 
     /**
-     * Check if the given combination already exists in the given groups array.
+     * Clean up groups, making sure in each group each word only exists once
      */
-    private boolean groupExists(List<String> group, List<List<String>> groups) {
-        return groups.contains(group);
+    private List<List<String>> cleanUpGroups(List<List<String>> groupedAnagrams) {
+        List<List<String>> finalGroupedList = new ArrayList<>();
+
+        for (List<String> group: groupedAnagrams) {
+            List<String> uniqueGroup = new ArrayList<>(new HashSet<>(group));
+
+            if (uniqueGroup.size() > 1) {
+                finalGroupedList.add(uniqueGroup);
+            }
+        }
+
+        return finalGroupedList;
     }
 }

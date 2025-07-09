@@ -1,13 +1,12 @@
 package de.derschatta;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,24 +25,26 @@ public class AnagramFinderTest {
     @Test
     public void groupAnagramsInArray() {
         List<List<String>> expected = Arrays.asList(
-            Arrays.asList("listen", "silent"),
-            Arrays.asList("listen", "tinsel"),
-            Arrays.asList("silent", "tinsel")
+            Arrays.asList("listen", "silent", "tinsel"),
+            Arrays.asList("vile", "evil")
         );
 
         List<String> input = Arrays.asList(
-        "listen", 
-            "silent",
-            "google",
-            "",
+            "listen", 
             "silent", 
+            "",
+            "google", 
+            "evil",
+            "silent",
+            "vile", 
             " ",
-            "tinsel"
+            "tinsel",
+            "evil"
         );
 
         List<List<String>> result = anagramFinder.groupAnagrams(input);
 
-        assertThat(result).hasSameElementsAs(expected);
+        assertThat(result).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expected);
     }
 
     @Test
