@@ -51,15 +51,18 @@ class AnagramFinder
             // Ignore empty strings
             if (empty(trim($subject))) continue;
 
-            $groupKey = $this->createSortedSubject($subject);
-            $groupedAnagrams[$groupKey][] = $subject;
+            $currentGroup = [$subject];
 
             foreach ($words as $index => $word) {
                 if ($this->isWordAnAnagramOfSubject($word, $subject)) {
-                    $groupedAnagrams[$groupKey][] = $word;
+                    $currentGroup[] = $word;
                     // It's already part of a group so remove it to save time later
                     unset($words[$index]);
                 }
+            }
+
+            if (!empty($currentGroup)) {
+                $groupedAnagrams[] = $currentGroup;
             }
         }
 
@@ -81,16 +84,6 @@ class AnagramFinder
                 throw new IllegalCharacterException("Word $word contains illegal character. Only alphanumeric characters allowed.");
             }
         });
-    }
-
-    /**
-     * Sort the subject alphabetically
-     */
-    private function createSortedSubject(string $subject): string
-    {
-        $splitSubject = str_split($subject);
-        sort($splitSubject);
-        return implode("", $splitSubject);
     }
 
     /**
