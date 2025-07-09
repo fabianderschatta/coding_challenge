@@ -48,6 +48,24 @@ public class AnagramFinderTest {
     }
 
     @Test
+    public void groupingIsCaseSensitive() {
+        List<List<String>> expected = Arrays.asList(
+            Arrays.asList("listen", "silent")
+        );
+
+        List<String> input = Arrays.asList(
+            "listen", 
+            "silent", 
+            "Anna",
+            "nana"
+        );
+
+        List<List<String>> result = anagramFinder.groupAnagrams(input);
+
+        assertThat(result).usingRecursiveComparison().ignoringCollectionOrder().isEqualTo(expected);
+    }
+
+    @Test
     public void sameWordsAreIgnoredAndNoEmptyInnerListsCreated() {
         List<String> input = Arrays.asList(
         "listen", 

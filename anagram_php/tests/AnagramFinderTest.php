@@ -42,6 +42,23 @@ class AnagramFinderTest extends TestCase
         $this->assertEqualsCanonicalizing($expected, $output);
     }
 
+    public function testGroupingIsCaseSensitive()
+    {
+        $expected = [
+            ["listen", "silent"],
+        ];
+        $input = [
+            "listen", 
+            "silent", 
+            "Anna",
+            "nana", 
+        ];
+
+        $output = $this->anagramFinder->groupAnagrams($input);
+
+        $this->assertEqualsCanonicalizing($expected, $output);
+    }
+
     public function testSameWordsAreIgnored() 
     {
         $expected = [];
