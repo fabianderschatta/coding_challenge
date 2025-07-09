@@ -2,7 +2,6 @@ package de.derschatta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -106,17 +105,13 @@ public class AnagramFinder {
             return false;
         }
 
-        // Let's split the words into its characters
+        // Let's sort the words into its characters
         // and determine whether they include the same letters
-        String[] splitSubject = subject.split("");
-        String[] splitMatch = word.split("");
+        char[] splitSubject = subject.toCharArray();
+        Arrays.sort(splitSubject);
 
-        Comparator<String> comparator = (string1, string2) -> {
-            return string1.compareTo(string2);
-        };
-
-        Arrays.sort(splitSubject, comparator);
-        Arrays.sort(splitMatch, comparator);
+        char[] splitMatch = word.toCharArray();
+        Arrays.sort(splitMatch);
 
         return Arrays.compare(splitSubject, splitMatch) == 0;
     }
