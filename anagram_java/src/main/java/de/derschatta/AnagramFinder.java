@@ -46,6 +46,7 @@ public class AnagramFinder {
         ArrayList<String> mutableWordList = new ArrayList<>(words);
         List<List<String>> groupedAnagrams = new ArrayList<>();
 
+        // TODO: Refactor this using a more efficient logic as execution time does grow quadratically
         while(!mutableWordList.isEmpty()) {
             // Get and remove the first word from the list
             // to not have to go through the whole list on every iteration again

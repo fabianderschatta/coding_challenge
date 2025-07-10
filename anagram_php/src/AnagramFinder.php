@@ -43,6 +43,8 @@ class AnagramFinder
         $this->validateWords($words);
 
         $groupedAnagrams = [];
+
+        // TODO: Refactor this using a more efficient logic as execution time does grow quadratically 
         while (!empty($words)) {
             // Get and remove the first word from the array
             // to not have to go through all words again from the start
